@@ -1,0 +1,136 @@
+layout-use("../Shared/content-layout.marko") current-title="Facebook"
+  layout-put into="body-content"
+     await(m_object from data.items) client-reorder=true
+         <await-placeholder>
+            <div class="loading" />
+         </await-placeholder>
+         <await-timeout>
+            A timeout occurred!
+         </await-timeout>
+         <await-error>
+            An error occurred!
+         </await-error>
+         if(m_object == null)
+           <center>
+              <div class="loginScreen"><div id="FacebookLoginLogo" class="authlog" title="facebook"></div></div>
+           </center>
+         else
+           var user=m_object
+           var kpath='/facebook/k/'
+           var hasalbums=false hasphoto=false hasvideo=false
+           <div class="row bhoechie-tab-content active">
+                <!-- Albums -->
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 folder-container">
+                  <div class="row folder-box-row">
+                    <if(user.albums !== undefined && user.albums.data !== undefined )>
+                      <if(user.albums.data.length > 0 )>
+                          <var date='' /> <assign hasalbum=true />
+                          <for(item in user.albums.data)>
+                              <assign date=(new Date(item.created_time).toDateString().substring(4)) />
+                              <if(item.picture !== undefined && item.picture.data !== undefined )>
+                                 <div class="col-lg-12 col-md-12 col-sm-3 col-xs-6 mbr-gallery-item">
+                                    <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                        <div class="mbr-caption-background" style="background-image: url(${item.picture.data.url});"></div>
+                                        <small class="mbr-figure__caption-small">Type caption here</small>
+                                    </figcaption>
+                                    <div class="album-box">
+                                      <a class="album"  name=item.id href=kpath+item.id id=item.id >
+                                        <div class="img-thumbnail" style="background-image: url(${item.picture.data.url});"></div>
+                                        <!--<img class="center-block img-responsive img-thumbnail" name=item.id src="${item.picture.data.url}" />-->
+                                        <!--<img name=item.id src="${out.global.app.locals.staticdir}/themes/images/folder.png" />-->
+                                      </a>
+                                      <div class="folder-dt name">${item.name}</div> 
+                                      <div class="folder-dt date">${new Date(item.created_time).toDateString().substring(4)}</div> 
+                                    </div>
+                                </div>
+                              </if>
+                          </for>
+                      </if>
+                    </if>
+                  </div>
+                </div>
+                <div class=(hasalbum ? 'col-lg-10 col-md-10 col-sm-12 col-xs-12 tab-content' : 'col-lg-12 col-md-12 col-sm-12 col-xs-12 tab-content') >
+                        <div class="opt-session">
+                            <span class="glyphicon glyphicon-th-list" id="view-gallery"></span>
+                            <span class="glyphicon glyphicon-option-vertical" id="options"></span>
+                        </div>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#photo-tab">Photos</a></li>
+                            <li><a data-toggle="tab" href="#video-tab">Videos</a></li>
+                        </ul>
+                        <!-- Photos -->
+                        <div id="photo-tab" class="tab-pane fade in active">
+                            <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                                <div>
+                                    <div class="row mbr-gallery-row no-gutter" id="photo-row" mode="grid">
+                                     <if(user.photos !== undefined && user.photos.data !== undefined )>
+                                     <for(item in user.photos.data)>
+                                      <if(item.images !== undefined && item.images.length > 0 )>
+                                        <var image=item.images[0].source /> <var thumbnail=item.images[0].source />
+                                        <for(image in item.images)>
+                                            <if(image.source.includes("p480x480"))>
+                                                <assign thumbnail=image.source />
+                                            </if>
+                                        </for>
+                                        <assign hasphoto=true />
+                                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                            <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                                <div class="mbr-caption-background"></div>
+                                                <small class="mbr-figure__caption-small">Type caption here</small>
+                                            </figcaption>
+                                            <div class="photo-box">
+                                              <div class="photo" data-slide-to="0" data-toggle="modal"  name=item.id title=image>
+                                                <img name=item.id src="${thumbnail}" />
+                                              </div>
+                                            </div>
+                                        </div>
+                                      </if>
+                                     </for>
+                                     </if>
+                                    </div>
+                                    <if(hasphoto == false )>
+                                       <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-image2.jpg);" ></span>
+                                    </if>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <!-- Videos -->
+                        <div id="video-tab" class="tab-pane fade">
+                            <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                                <div>
+                                    <div class="row mbr-gallery-row no-gutter" id="video-row" mode="grid">
+                                     <if(user.videos !== undefined && user.videos.data !== undefined )>
+                                     <var date='' /> <var source='' />
+                                     <for(item in user.videos.data)>
+                                      <if(item.embed_html !== undefined )>
+                                        <assign hasvideo=true /> <assign date=(new Date(item.created_time).toDateString().substring(4)) />
+                                        <assign source=(item.embed_html.substring(item.embed_html.indexOf('http'),item.embed_html.indexOf('" '))) />
+                                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                            <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                                <div class="mbr-caption-background"></div>
+                                                <small class="mbr-figure__caption-small">Type caption here</small>
+                                            </figcaption>
+                                            <div class="video-box">
+                                              <div class="video" data-slide-to="0" data-toggle="modal" data-target=".mymodal" name=item.id title="${source}">
+                                                <img name=item.id src="${item.picture}" />
+                                              </div>
+                                              <span>Created on: ${date}</span><br/>
+                                              <span>${item.description}</span>
+                                            </div>
+                                        </div>
+                                      </if>
+                                     </for>
+                                     </if>
+                                    </div>
+                                    <if(hasvideo == false )>
+                                       <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-video2.jpg);" ></span>
+                                    </if>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+           </div>
+            
+          

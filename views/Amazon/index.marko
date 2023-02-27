@@ -1,0 +1,192 @@
+layout-use("../Shared/content-layout.marko") current-title=data.title pre-path=data.path
+  layout-put into="body-content"
+     await(user from data.items) client-reorder=true
+         <await-placeholder>
+            <div class="loading" />
+         </await-placeholder>
+         <await-timeout>
+            A timeout occurred!
+         </await-timeout>
+         <await-error>
+            An error occurred!
+         </await-error>
+         if(user == null)
+           <center>
+              <div class="loginScreen"><div id="AmazonLoginLogo" class="authlog" title="amazon"></div></div>
+           </center>
+         else
+           var folders=user
+           var kpath='/amazon/k/'
+           var hasfolder=false hasphoto=false hasvideo=false hasother=false
+           <div class="row bhoechie-tab-content active">
+              <!-- Folders -->
+              <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 folder-container">
+                 <div class="row folder-box-row">
+                    <for(item in folders.data)>
+                      <if(item.kind == "FOLDER")>
+                        <assign hasfolder=true />
+                        <div class="col-lg-12 col-md-12 col-sm-3 col-xs-6 mbr-gallery-item">
+                            <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                <div class="mbr-caption-background"></div>
+                                <small class="mbr-figure__caption-small">Type caption here</small>
+                            </figcaption>
+                            <div class="folder-box">
+                              <a class="folder"  name=item.id href=kpath+item.id id=item.id >
+                                <img name=item.id src="${out.global.app.locals.staticdir}/themes/images/folder.png" />
+                              </a>
+                              <div class="folder-dt name">${item.name}</div> 
+                              <div class="folder-dt date">${new Date(item.createdDate).toDateString().substring(4)}</div> 
+                            </div>
+                        </div>
+                      </if>
+                    </for>
+                 </div>
+                </div>
+              <div class=(hasfolder ? 'col-lg-10 col-md-10 col-sm-12 col-xs-12 tab-content' : 'col-lg-12 col-md-12 col-sm-12 col-xs-12 tab-content') >
+                <div class="opt-session">
+                    <span class="glyphicon glyphicon-th-list" id="view-gallery"></span>
+                    <span class="glyphicon glyphicon-option-vertical" id="options"></span>
+                </div>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#photo-tab">Photos</a></li>
+                    <li><a data-toggle="tab" href="#video-tab">Videos</a></li>
+                    <li><a data-toggle="tab" href="#others-tab">Others</a></li>
+                </ul>
+                <!-- Photos -->
+                <div id="photo-tab" class="tab-pane fade in active">
+                        <!-- Gallery -->
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter" id="photo-row" mode="grid">
+                                 <var count=0 />
+                                 <for(item in folders.data)>
+                                  <if(item.kind == "FILE" && item.contentProperties.image != null)>
+                                    <assign hasphoto=true />
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                        <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                            <div class="mbr-caption-background"></div>
+                                            <small class="mbr-figure__caption-small">Type caption here</small>
+                                        </figcaption>
+                                        <div class="photo-box">
+                                          <div class="photo" data-slide-to="${count}" data-toggle="modal"  name=item.id title="${item.tempLink}?viewBox=400" >
+                                            <a href="#lb-gallery2-10" data-slide-to="${count}" data-toggle="modal">
+                                                <img name=item.id src="${item.tempLink}?viewBox=400" />
+                                            </a>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <assign count++ />
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasphoto == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-image2.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <!-- Lightbox -->
+                        <div data-app-prevent-settings="" class="mbr-slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false" id="lb-gallery2-10">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="carousel-inner">
+                                            <var count=0 />
+                                            <for(item in folders.data)>
+                                             <if(item.kind == "FILE" && item.contentProperties.image != null)>
+                                                <assign count++ />
+                                                <if(count == 2 )>
+                                                    <div class="item active">
+                                                        <img alt="" src="${item.tempLink}?viewBox=400" >
+                                                    </div>
+                                                </if>
+                                                <else>
+                                                    <div class="item">
+                                                        <img alt="" src="${item.tempLink}?viewBox=400" >
+                                                    </div>  
+                                                </else>
+                                             </if>
+                                            </for>
+                                        </div>
+                                        <a class="left carousel-control" role="button" data-slide="prev" href="#lb-gallery2-10">
+                                            <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="right carousel-control" role="button" data-slide="next" href="#lb-gallery2-10">
+                                            <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                    
+                                        <a class="close" href="#" role="button" data-dismiss="modal">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            <span class="sr-only">Close</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- Videos -->
+                <div id="video-tab" class="tab-pane fade">
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter" id="video-row" mode="grid">
+                                 <for(item in folders.data)>
+                                  <if(item.kind == "FILE" && item.contentProperties.video != null)>
+                                    <assign hasvideo=true />
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                        <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                            <div class="mbr-caption-background"></div>
+                                            <small class="mbr-figure__caption-small">Type caption here</small>
+                                        </figcaption>
+                                        <div class="video-box">
+                                          <div class="video" data-slide-to="0" data-toggle="modal" data-target=".mymodal"  name=item.id title=src="${item.tempLink}" >
+                                            <img name=item.id src="${item.tempLink}?viewBox=300" />
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasvideo == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-video2.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                <!-- Others -->
+                <div id="others-tab" class="tab-pane fade">
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter">
+                                 <for(item in folders.data)>
+                                  <if(item.kind != "FOLDER" && item.contentProperties.contentType.indexOf('audio') > -1)>
+                                    <assign hasother=true />
+                                    <div class="col-sm-12 col-xs-12">
+                                        <div class="audio-box">
+                                          <div class="audio glyphicon glyphicon-play-circle" data-toggle="modal" data-target=".mymodal" name=item.id title=item.tempLink ></div>
+                                          <span>${item.name}</span>
+                                        </div>
+                                    </div>
+                                  </if>
+                                  <if(item.kind == "FILE" && item.contentProperties.contentType.indexOf('audio') < 0 && item.contentProperties.image === undefined && item.contentProperties.video === undefined )>
+                                    <assign hasother=true />
+                                    <div class="col-sm-12 col-xs-12">
+                                        <a href=item.tempLink name=item.id class="doc glyphicon glyphicon-file" target="_blank"></a>
+                                        <span>${item.name}</span>
+                                    </div>
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasother == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-item.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+              </div>
+           </div>
+            
+          

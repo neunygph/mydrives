@@ -1,0 +1,19 @@
+{
+  "name": "MyDrives",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "author": {
+    "name": "Phuong H Nguyen",
+    "email": "nguyeph@hotmail.com"
+  },
+  "dependencies": {
+    "async": "^0.2.10",
+    "bluebird": "^3.4.6",
+    "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "marko": "^3.10.0",
+    "marko-widgets": "^6.3.3"
+  }
+}

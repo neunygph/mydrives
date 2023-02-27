@@ -1,0 +1,155 @@
+layout-use("../Shared/content-layout.marko") current-title="Dropbox"
+  layout-put into="body-content"
+     await(user from data.items) client-reorder=true
+         <await-placeholder>
+            <div class="loading" />
+         </await-placeholder>
+         <await-timeout>
+            A timeout occurred!
+         </await-timeout>
+         <await-error>
+            An error occurred!
+         </await-error>
+         if(user == null)
+           <center>
+              <div class="loginScreen"><div id="DropboxLoginLogo" class="authlog" title="dropbox"></div></div>
+           </center>
+         else
+           var folders=user
+           var kpath='/dropbox/k'
+           var hasfolder=false hasphoto=false hasvideo=false hasother=false
+           <div class="row bhoechie-tab-content active">
+                <!-- Folders -->
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 folder-container">
+                   <div class="row folder-box-row">
+                     <for(item in folders.entries)>
+                          <if(item[".tag"] == "folder")>
+                            <assign hasfolder=true />
+                            <div class="col-lg-12 col-md-12 col-sm-3 col-xs-6 mbr-gallery-item">
+                                <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                    <div class="mbr-caption-background"></div>
+                                    <small class="mbr-figure__caption-small">Type caption here</small>
+                                </figcaption>
+                                <div class="folder-box">
+                                  <a class="folder"  name=item.id href=kpath+item.id id=item.id >
+                                    <img name=item.id src="${out.global.app.locals.staticdir}/themes/images/folder.png" />
+                                  </a>
+                                  <div class="folder-dt name">${item.name}</div> 
+                                  <div class="folder-dt date"></div> 
+                                </div>
+                            </div>
+                          </if>
+                     </for>
+                   </div>
+                </div>
+                <div class=(hasfolder ? 'col-lg-10 col-md-10 col-sm-12 col-xs-12 tab-content' : 'col-lg-12 col-md-12 col-sm-12 col-xs-12 tab-content') >
+                    <div class="opt-session">
+                        <span class="glyphicon glyphicon-th-list" id="view-gallery"></span>
+                        <span class="glyphicon glyphicon-option-vertical" id="options"></span>
+                    </div>
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a class="gal-tab" data-toggle="tab" href="#photo-tab">Photos</a></li>
+                        <li><a class="gal-tab" data-toggle="tab" href="#video-tab">Videos</a></li>
+                        <li><a data-toggle="tab" href="#others-tab">Others</a></li>
+                    </ul>
+                    <!-- Photos -->
+                    <div id="photo-tab" class="tab-pane fade in active">
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter" id="photo-row" mode="grid">
+                                 <for(item in folders.entries)>
+                                  <if(item[".tag"] == "file" && (item.media_info != undefined && item.media_info.metadata[".tag"] == "photo"))>
+                                    <assign hasphoto=true />
+                                    <await(imgdata from data.thumb) client-reorder=true >
+                                        <for(img in imgdata)>
+                                          <if(img.rev == item.rev )>
+                                           <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                              <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                                <div class="mbr-caption-background"></div>
+                                                <small class="mbr-figure__caption-small">Type caption here</small>
+                                              </figcaption>
+                                              <div class="photo-box">
+                                                <div class="photo" data-slide-to="0" data-toggle="modal"  name=item.rev title="">
+                                                  <img name=item.rev src="data:image/jpg;base64,${img.base64}" />
+                                                </div>
+                                              </div>
+                                           </div>
+                                          </if>
+                                        </for>
+                                    </await>
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasphoto == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-image2.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <!-- Videos -->
+                    <div id="video-tab" class="tab-pane fade">
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter" id="video-row" mode="grid">
+                                 <for(item in folders.entries)>
+                                  <if(item[".tag"] == "file" && (item.media_info != undefined && item.media_info.metadata[".tag"] == "video"))>
+                                    <assign hasvideo=true />
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                        <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                            <div class="mbr-caption-background"></div>
+                                            <small class="mbr-figure__caption-small">Type caption here</small>
+                                        </figcaption>
+                                        <div class="video-box">
+                                          <div class="video" data-slide-to="0" data-toggle="modal" data-target=".mymodal" name=item.id title="">
+                                            <img name=item.id src="" />
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasvideo == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-video2.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <!-- Others -->
+                    <div id="others-tab" class="tab-pane fade">
+                            <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                                <div>
+                                    <div class="row mbr-gallery-row no-gutter">
+                                     <for(item in folders.entries)>
+                                      <if(item[".tag"] === "file" && item.name.includes(".mp3"))>
+                                        <assign hasother=true />
+                                        <div class="col-sm-12 col-xs-12">
+                                            <div class="audio-box">
+                                              <div class="audio glyphicon glyphicon-play-circle" data-toggle="modal" data-target=".mymodal" name=item.id title="" ></div>
+                                              <span>${item.name}</span>
+                                            </div>
+                                        </div>
+                                      </if>
+                                      <if(item[".tag"] === "file" && item.media_info === undefined && !item.name.includes(".mp3") )>
+                                        <assign hasother=true />
+                                        <div class="col-sm-12 col-xs-12">
+                                            <div class="audio-box">
+                                              <div class="doc glyphicon glyphicon-file" data-toggle="modal" data-target=".mymodal" name=item.id title="" ></div>
+                                              <span>${item.name}</span>
+                                            </div>
+                                        </div>
+                                      </if>
+                                     </for>
+                                    </div>
+                                    <if(hasother == false )>
+                                       <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-item.jpg);" ></span>
+                                    </if>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                </div>
+           </div>
+            
+          

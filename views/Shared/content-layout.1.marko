@@ -1,0 +1,44 @@
+layout-use("../Shared/layout.marko") load-gallery=true load-dropbox=true current-title=data.currentTitle
+    layout-put into="body"
+        var title=data.prePath
+        <section class="mbr-gallery mbr-section mbr-section--no-padding" id="gallery2-10">
+          <div class="container-fluid" id="main-body">
+            <div class="row">
+                <ul class="breadcrumb">
+                    <if(data.prePath !== undefined )>
+    				<li>
+    					<a href=data.prePath.base>All</a> <!--<span class="divider">/</span>-->
+    				</li>
+    				<li>
+    					<a href=data.prePath.prev.id>${data.prePath.prev.name}</a>
+    				</li>
+    				<li class="active">
+    					${data.prePath.originalUrl.name}
+    				</li>
+    				</if>
+    				<else>
+    				<li></li>
+    				</else>
+			    </ul>
+			    <span class="glyphicon glyphicon-th-list" id="view-gallery" ></span>
+			</div>
+            <div class="row gutter bhoechie-tab-container" id="main-section">
+                <html-comment>nav</html-comment>
+                <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 gutter bhoechie-tab-menu hidden-sm hidden-xs" id="desktop-main-nav">
+                    <div class="list-group" id="list-item">
+                        <a href="javascript:void(0);" title="amazon" class="list-group-item text-center sr-log"><span id="amazonnav" style="background-image: url(https://d3sh86b159avjl.cloudfront.net/themes/images/amzn.png);"></span></a>
+                        <a href="javascript:void(0);" title="google" class="list-group-item text-center sr-log"><span id="googlenav" style="background-image: url(https://d3sh86b159avjl.cloudfront.net/themes/images/google.png);"></span></a>
+                        <a href="javascript:void(0);" title="one" class="list-group-item text-center sr-log"><span id="onenav" style="background-image: url(https://d3sh86b159avjl.cloudfront.net/themes/images/onenav.png);"></span></a>
+                        <a href="javascript:void(0);" title="dropbox" class="list-group-item text-center sr-log"><span id="dropboxnav" style="background-image: url(https://d3sh86b159avjl.cloudfront.net/themes/images/dropbox.png);"></span></a>
+                        <a href="javascript:void(0);" title="facebook" class="list-group-item text-center sr-log"><span id="facebooknav" style="background-image: url(https://d3sh86b159avjl.cloudfront.net/themes/images/facebook.png);"></span></a>
+                        <a href="javascript:void(0);" title="instagram" class="list-group-item text-center sr-log"><span id="instagramnav" style="background-image: url(https://d3sh86b159avjl.cloudfront.net/themes/images/instagram.png);"></span></a>
+                    </div>
+                </div>
+                <html-comment>main-content</html-comment>
+                <div class="col-lg-11 col-md-11 col-sm-12 col-xs-12 gutter bhoechie-tab" style="padding:0px!important;">
+                   <layout-placeholder name="body-content"/>
+                </div>
+            </div>
+
+        </div>
+        </section>

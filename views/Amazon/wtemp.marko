@@ -1,0 +1,48 @@
+await(user from data.items) client-reorder=true
+     if(user == null)
+       div.loginScreen
+        <div id="AmazonLoginLogo" class="authlog" title="amazon"></div>
+     else
+       div.folderContainer
+         var folders=user
+         var kpath='/amazon/k/'
+         <for(item in folders.data)>
+          <if(item.kind == "FOLDER")><!-- Folder div -->
+            <div class="folder-box">
+              <a href="javascript:void(0)"  >
+                <div class="folder" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/folder-gray.png);" />
+              </a>
+              <div>${item.name}</div> 
+            </div>
+          </if>
+          <else><!-- File div -->
+           <if(item.contentProperties.image != null)>
+            <div class="photo-box">
+              <a href=item.tempLink >
+                <div class="photo" style="opacity: 1;background-image: url(${item.tempLink}?viewBox=400);" />
+              </a>
+              <div class="photo-overlay"/>
+              <div class="photo-check-icon"/>
+              <div class="photo-status"/>
+            </div>
+            </if>
+            <else-if(item.contentProperties.video != null)>
+             <div class="video-box">
+               <a href=item.tempLink >
+                <img src='${item.tempLink}/alt/thumb?viewBox=180&fit=clip'/>
+               </a>
+               <div>${item.name}</div>
+             </div>
+            </else-if>
+            <else>
+             <div class="doc-box">
+               <a href=item.tempLink >
+                <img src='${item.tempLink}'/>
+               </a>
+               <div>${item.name}</div>
+             </div>
+             </else>
+            </else>
+          </for>
+            
+          

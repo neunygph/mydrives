@@ -1,0 +1,140 @@
+layout-use("../Shared/content-layout.marko") current-title="Google" pre-path=data.path
+  layout-put into="body-content"
+     await(user from data.items) client-reorder=true
+         <await-placeholder>
+            <div class="loading" />
+         </await-placeholder>
+         <await-timeout>
+            A timeout occurred!
+         </await-timeout>
+         <await-error>
+            An error occurred!
+         </await-error>
+         if(user == null)
+           <center>
+              <div class="loginScreen"><div id="GoogleLoginLogo" class="authlog" title="google"></div></div>
+           </center>
+         else
+           var folders=user
+           var kpath='/google/k/'
+           var hasfolder=false hasphoto=false hasvideo=false hasother=false
+           <div class="row bhoechie-tab-content active">
+              <!-- Folders -->
+              <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 folder-container">
+                 <div class="row folder-box-row">
+                     <for(item in folders.files)>
+                       <if(item.mimeType.includes("folder"))>
+                         <div class="folder-box col-lg-12 col-md-12 col-sm-6 col-xs-6">
+                          <div class="folder">
+                             <a href=kpath+item.id name=item.id id=item.id >
+                              <div class="folder" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/folder-gray.png);" name=item.id></div>
+                             </a>
+                          </div>
+                          <div class="folder-dt">${item.name}</div> 
+                          <div class="folder-dt">${new Date(item.createdTime).toLocaleDateString()}</div> 
+                        </div>
+                       </if>
+                     </for>
+                 </div>
+              </div>
+              <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 tab-content" >
+                    <div class="opt-session">
+                        <span class="glyphicon glyphicon-th-list" id="view-gallery"></span>
+                        <span class="glyphicon glyphicon-option-vertical" id="options"></span>
+                    </div>
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" class="content-tab" href="#photo-tab">Photos</a></li>
+                        <li><a data-toggle="tab" class="content-tab" href="#video-tab">Videos</a></li>
+                        <li><a data-toggle="tab" class="content-tab" href="#others-tab">Others</a></li>
+                    </ul>
+                    <!-- Photos -->
+                    <div id="photo-tab" class="tab-pane fade in active">
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter" id="photo-row" mode="grid">
+                                 <for(item in folders.files)>
+                                  <if(item.mimeType.includes("image"))>
+                                    <assign hasphoto=true />
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                        <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                            <div class="mbr-caption-background"></div>
+                                            <small class="mbr-figure__caption-small">Type caption here</small>
+                                        </figcaption>
+                                        <div class="photo-box">
+                                          <div class="photo" data-slide-to="0" data-toggle="modal"  name=item.id title="${item.webViewLink.substring(0,item.webViewLink.indexOf('/view')) + '/preview'}">
+                                            <img name=item.id src="${item.thumbnailLink}" />
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasphoto == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-image2.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <!-- Videos -->
+                    <div id="video-tab" class="tab-pane fade">
+                        <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                            <div>
+                                <div class="row mbr-gallery-row no-gutter" id="video-row" mode="grid">
+                                 <for(item in folders.files)>
+                                  <if(item.mimeType.includes("video"))>
+                                    <assign hasvideo=true />
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 mbr-gallery-item">
+                                        <figcaption class="mbr-figure__caption mbr-figure__caption--std-grid">
+                                            <div class="mbr-caption-background"></div>
+                                            <small class="mbr-figure__caption-small">Type caption here</small>
+                                        </figcaption>
+                                        <div class="video-box">
+                                          <div class="video" data-slide-to="0" data-toggle="modal" data-target=".mymodal" name=item.id title="${item.webViewLink.substring(0,item.webViewLink.indexOf('/view')) + '/preview'}">
+                                            <img name=item.id src="${item.thumbnailLink}" />
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </if>
+                                 </for>
+                                </div>
+                                <if(hasvideo == false )>
+                                   <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-video2.jpg);" ></span>
+                                </if>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <!-- Others -->
+                    <div id="others-tab" class="tab-pane fade">
+                            <div class="mbr-section__container mbr-gallery-layout-article mbr-section__container--isolated">
+                                <div>
+                                    <div class="row mbr-gallery-row no-gutter">
+                                     <for(item in folders.files)>
+                                      <if(item.mimeType.includes("audio"))>
+                                        <assign hasother=true />
+                                        <div class="col-sm-12 col-xs-12">
+                                              <div class="audio" data-toggle="modal" data-target=".mymodal" name=item.id title="${item.webViewLink.substring(0,item.webViewLink.indexOf('/view')) + '/preview'}" style="opacity: 1;background-image: url(${item.iconLink});" ></div>
+                                              <span>${item.name}</span>
+                                        </div>
+                                      </if>
+                                      <if((item.mimeType.indexOf("apps.folder") < 0) && (item.mimeType.includes("application") || item.mimeType.includes("text")))>
+                                        <assign hasother=true />
+                                        <div class="col-sm-12 col-xs-12">
+                                            <div class="doc" data-toggle="modal" data-target=".mymodal" name=item.id title="${item.webViewLink.substring(0,item.webViewLink.indexOf('/view')) + '/preview'}" style="opacity: 1;background-image: url(${item.iconLink});" ></div>
+                                            <span>${item.name}</span>
+                                        </div>
+                                      </if>
+                                     </for>
+                                    </div>
+                                    <if(hasother == false )>
+                                       <span class="no-item" style="background-image: url(${out.global.app.locals.staticdir}/themes/images/no-item.jpg);" ></span>
+                                    </if>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+               </div>
+           </div>
+            
+          

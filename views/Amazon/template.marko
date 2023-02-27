@@ -1,0 +1,11 @@
+layout-use("../Shared/layout.marko")
+  layout-put into="body"
+        await(user from data.items) client-reorder=true arg-delay=3000 timeout=5000 
+            main w-bind="./main-widget"
+              <h2>
+                3) Main
+              </h2>
+              <span w-id="message">
+                &nbsp;
+              </span>
+        <init-widgets/>
